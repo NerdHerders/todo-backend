@@ -1,0 +1,190 @@
+openapi: 3.0.0
+info:
+  title: Simple ToDo API
+  description: This is a simple ToDo API
+  contact:
+    email: sean@millernerd.com
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+servers:
+- url: https://virtserver.swaggerhub.com/NerdHerders/todo/1.0.0
+  description: SwaggerHub API Auto Mocking
+tags:
+- name: admins
+  description: Secured Admin-only calls
+- name: users
+  description: Operations available to regular users
+paths:
+  /tasks:
+    get:
+      description: Returns all active tasks
+      operationId: tasksGET
+      responses:
+        "200":
+          description: A list of tasks
+          content:
+            application/*:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Task'
+                x-content-type: application/*
+        default:
+          description: Unexpected error
+          content:
+            application/*:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+      x-swagger-router-controller: Default
+  /tasks/{id}:
+    get:
+      description: Returns specified task
+      operationId: tasksIdGET
+      parameters:
+      - name: id
+        in: path
+        description: ID of task to use
+        required: true
+        style: simple
+        explode: false
+        schema:
+          $ref: '#/components/schemas/uuid'
+      responses:
+        "200":
+          description: A single task
+          content:
+            application/*:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Task'
+                x-content-type: application/*
+        default:
+          description: error payload
+          content:
+            application/*:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+      x-swagger-router-controller: Default
+    put:
+      description: Updates a task
+      operationId: tasksIdPUT
+      parameters:
+      - name: id
+        in: path
+        description: ID of task to use
+        required: true
+        style: simple
+        explode: false
+        schema:
+          $ref: '#/components/schemas/uuid'
+      requestBody:
+        content:
+          application/*:
+            schema:
+              $ref: '#/components/schemas/Task'
+      responses:
+        "200": {}
+      x-swagger-router-controller: Default
+    post:
+      description: Adds new active task
+      operationId: tasksIdPOST
+      parameters:
+      - name: id
+        in: path
+        description: ID of task to use
+        required: true
+        style: simple
+        explode: false
+        schema:
+          $ref: '#/components/schemas/uuid'
+      requestBody:
+        content:
+          application/*:
+            schema:
+              $ref: '#/components/schemas/Task'
+        required: true
+      responses:
+        "200":
+          content:
+            application/*:
+              schema:
+                type: string
+                example: success!
+                x-content-type: application/*
+      x-swagger-router-controller: Default
+    delete:
+      description: Deletes a task
+      operationId: tasksIdDELETE
+      parameters:
+      - name: id
+        in: path
+        description: ID of task to use
+        required: true
+        style: simple
+        explode: false
+        schema:
+          $ref: '#/components/schemas/uuid'
+      responses:
+        "200": {}
+      x-swagger-router-controller: Default
+components:
+  schemas:
+    uuid:
+      type: string
+      format: uuid
+      example: d290f1ee-6c54-4b01-90e6-d701748f0851
+    Task:
+      required:
+      - id
+      - name
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/uuid'
+        title:
+          type: string
+          example: Take out the trash
+        body:
+          type: string
+        labels:
+          type: array
+          items:
+            type: string
+            example: urgent
+        priority:
+          type: integer
+          format: int32
+        color:
+          type: string
+          format: binary
+        due:
+          type: string
+          format: date
+        active:
+          type: boolean
+      example:
+        color: ""
+        due: 2000-01-23
+        active: true
+        id: d290f1ee-6c54-4b01-90e6-d701748f0851
+        title: Take out the trash
+        body: body
+        priority: 0
+        labels:
+        - urgent
+        - urgent
+    ErrorModel:
+      required:
+      - code
+      - message
+      type: object
+      properties:
+        message:
+          type: string
+        code:
+          maximum: 600
+          minimum: 100
+          type: integer
